@@ -13,7 +13,7 @@ public class SolutionWriter {
 
         System.out.println("Volume allocated on links");
         for( int a=0; a< solution.getVolumeAllocatedOnLinks().size();a++ ){
-            System.out.print(solution.getVolumeAllocatedOnLinks().get(a));
+            System.out.print(solution.getVolumeAllocatedOnLinks().get(a)+" ");
 
         }
         System.out.println("");

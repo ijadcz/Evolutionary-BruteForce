@@ -10,7 +10,7 @@ public class BruteForce {
 
 
 
-    public static Solution DDAP(ArrayList<Demand> demands, ArrayList<Link> links){
+    public static Solution DDAP(ArrayList<Demand> demands, ArrayList<Link> links, ArrayList<Solution> allPossible){
         ArrayList<Solution> solutions= allPossibleSolutions(demands, links);
         int cost=0;
         Solution bestSolution= new Solution();
@@ -34,7 +34,7 @@ public class BruteForce {
 
 
 
-
+            allPossible.add(solution);
         }
 
 
@@ -43,7 +43,7 @@ public class BruteForce {
 
 
 
-    public static Solution DAP(ArrayList<Demand> demands, ArrayList<Link> links){
+    public static Solution DAP(ArrayList<Demand> demands, ArrayList<Link> links, ArrayList<Solution> allPossible){
         ArrayList<Solution> solutions = allPossibleSolutions(demands, links);
 
         int maxValue= Integer.MAX_VALUE;
@@ -52,16 +52,14 @@ public class BruteForce {
         for(Solution solution:solutions){
 
 
-          //  ArrayList<Integer> linksOverload = new ArrayList<>();
+
             int cost=0;
             int n=0;
             for (int a = 0; a < solution.getVolumeAllocatedOnLinks().size(); a++) {
                 if(cost<(solution.getVolumeAllocatedOnLinks().get(a) -( links.get(a).getNumberOfModules()*links.get(a).getLinkModule())));
                 cost=(solution.getVolumeAllocatedOnLinks().get(a) -( links.get(a).getNumberOfModules()*links.get(a).getLinkModule()));
                 /*
-            ArrayList<Integer> linksOverload = new ArrayList<>();
-            for(int a=0; a< solution.getVolumeAllocatedOnLinks().size(); a++){
-                linksOverload.add(Math.max(0,solution.getVolumeAllocatedOnLinks().get(a)-links.get(a).getNumberOfModules()));
+
 
             }*/}
             solution.setCost(cost);
@@ -70,6 +68,7 @@ public class BruteForce {
                 bestSolution=solution;
 
             }
+            allPossible.add(solution);
 
 
 
@@ -205,60 +204,3 @@ public class BruteForce {
         return ok;
     }
 }
-/*
-    public static ArrayList<int[]> allCombinationsForDemand(final int n, final int k) {
-        ArrayList<String>res= new ArrayList<>();
-        int[] input = new int[k + 1];
-        Boolean mtc = Boolean.FALSE;
-        int t = n;
-        int h = 0;
-        do {
-            if (mtc) {
-                if (t > 1) {
-                    h = 0;
-                }
-                h++;
-                t = input[h];
-                input[h] = 0;
-                input[1] = t - 1;
-                input[h + 1]++;
-            } else {
-                // First permutation is always n00...0 i.e. it's a descending
-                // series lexicographically.
-                input[1] = n;
-                for (int i = 2; i <= k; i++) {
-                    input[i] = 0;
-                }
-            }
-            res.add(java.util.Arrays.toString(input));
-            //System.out.println(java.util.Arrays.toString(input));
-            //System.out.println(input.length);
-            mtc = input[k] != n;
-        } while (mtc);
-
-
-        ArrayList<int[]> finalCombinations= new ArrayList<>();
-        for(int a=0; a<res.size();a++){
-            int [] temp=new int[k];
-            int q=4;
-            for(int b=0; b<k;b++){
-                temp[b]=getNumericValue(res.get(a).charAt(q));
-                q=q+3;
-
-
-            }
-            finalCombinations.add(temp);
-
-        }
-
-
-
-
-        return finalCombinations;
-    }
-
-
-
-
-}
-*/

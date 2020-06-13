@@ -14,8 +14,7 @@ public class Reader {
 
 
         ArrayList<String> result = new ArrayList<>();
-        //ArrayList<Link> links = new ArrayList<>();
-        //ArrayList<Demand> demands = new ArrayList<>();
+
 
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -24,10 +23,7 @@ public class Reader {
                 result.add(br.readLine());
             }
 
-            System.out.println(result);
-
-
-        } catch (IOException e) {
+             } catch (IOException e) {
 
             e.printStackTrace();
 
@@ -41,34 +37,19 @@ public class Reader {
         for ( i = 1; i < result.size(); i++) {
 
             if (result.get(i).equals("-1")) {
-                System.out.println("aaaaaaaaaaaaa");
+
                 break;
             }
-            System.out.println("c");
+
             Link link = new Link();
-            System.out.println(result.get(i));
+
             String[] temp = result.get(i).split(" ");
-            System.out.println(result.get(i)+"llllllllllllllllllllllllllllll");
-
-
 
             link.setStartNode(Integer.parseInt(temp[0]));
-            System.out.println(Integer.parseInt(temp[0])+ "start");
-            System.out.println(link.getStartNode());
             link.setEndNode(Integer.parseInt(temp[1]));
-            System.out.println(Integer.parseInt(temp[1])+ " end");
-            System.out.println(link.getEndNode()   );
-
             link.setNumberOfModules(Integer.parseInt(temp[2]));
-            System.out.println(Integer.parseInt(temp[2])+ " number of mod");
-            System.out.println(link.getNumberOfModules());
-
             link.setModuleCost(Integer.parseInt(temp[3]));
-            System.out.println(Integer.parseInt(temp[3])+ " cost");
-            System.out.println(link.getModuleCost());
             link.setLinkModule(Integer.parseInt(temp[4]));
-            System.out.println(Integer.parseInt(temp[4])+ " module");
-            System.out.println(link.getLinkModule());
 
             links.add(link);
 
@@ -100,11 +81,8 @@ public class Reader {
 
 
                     i++;
-                    System.out.println(result.get(i) + "number paths");
                     int z = Integer.parseInt(result.get(i));
-                    System.out.println(z);
-                    //demand.setPaths(new ArrayList<Path>());
-                    ArrayList<Path> paths = new ArrayList<Path>();
+                     ArrayList<Path> paths = new ArrayList<Path>();
                     for (int b = 0; b < z; b++) {
 
                         i++;
@@ -115,7 +93,6 @@ public class Reader {
                         // path.setLinks(new int[temp.length-1]);
                         int[] l = new int[temp.length - 1];
                         for (int c = 0; c < temp.length - 1; c++) {
-                            System.out.println(Integer.parseInt(temp[c + 1]));
                             l[c] = Integer.parseInt(temp[c + 1]);
                             if (numberOfLinks<l[c])
                                 numberOfLinks= l[c];
@@ -125,9 +102,7 @@ public class Reader {
                         paths.add(path);
                         demand.setPaths(paths);
                         demand.setNumberOfLinks(numberOfLinks);
-                        System.out.println();
 
-                        System.out.println(result.get(i) + "haloooo");
 
 
                     }

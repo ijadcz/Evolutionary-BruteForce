@@ -9,17 +9,9 @@ public class Solution {
 
     private List<int[]> chromosome;
     private List<Integer> volumeAllocatedOnLinks;
-    private int numberOfLinksWithExceededCapacity;
-    private int cost;
+   private int cost;
 
-    public void setNumberOfLinksWithExceededCapacity( int newNumber){
-        this.numberOfLinksWithExceededCapacity=newNumber;
-    }
-
-    public int getNumberOfLinksWithExceededCapacity()
-    {
-        return numberOfLinksWithExceededCapacity;
-    }
+   
     public void setChromosome(List<int[]> newChromosome){
         this.chromosome=newChromosome;
     }

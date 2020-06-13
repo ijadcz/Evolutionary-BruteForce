@@ -12,21 +12,7 @@ import static java.lang.Character.getNumericValue;
 
 public class EvolutionaryAlgorithm {
     private int numberOfMutations;
-
-    /*
-        private int sizeOfInitialPopulation;
-        private double pMutation;
-        private double pCrossover;
-        private long endTime;
-        private int endNumberOfGeneration;
-        private int maxNumberOfGenerationWithoutImprovement;
-
-        //private long seed;
-        private double percentOfBestSolutions;
-        private ArrayList<Link> links;
-        private ArrayList<Demand>demands;
-        private Random random;
-        */
+    private int numberOfGenerations;
     private ArrayList<Solution> bestSolutionFromEveryGeneration;
 
     public ArrayList<Solution> getBestSolutionsFromEveryGeneration() {
@@ -34,22 +20,16 @@ public class EvolutionaryAlgorithm {
     }
 
 
-    public EvolutionaryAlgorithm(int numberOfMutations, ArrayList<Solution> bestSolutionFromEveryGeneration) {//( int sizeOfInitialPopulation, double pMutation, double pCrossover, long endTime, int endNumberOfGeneration, int endNumberOfMutation, int maxNumberOfGenerationWithoutImprovement, long seed, double percentOfBestSolutions, ArrayList<Link >links, ArrayList<Demand>demands, ArrayList<Solution> bestSolutionsFromEveryGeneration){
-  /*  this.sizeOfInitialPopulation= sizeOfInitialPopulation;
-    this.pMutation=pMutation;
-    this.pCrossover=pCrossover;
-    this.endTime=endTime;
-    this.endNumberOfGeneration=endNumberOfGeneration;
-    this.numberOfMutations=numberOfMutations;
-    this.maxNumberOfGenerationWithoutImprovement=maxNumberOfGenerationWithoutImprovement;
-    this.links=links;
-    this.demands=demands;
-    this.random = new Random(seed);*/
+    public EvolutionaryAlgorithm(int numberOfMutations, ArrayList<Solution> bestSolutionFromEveryGeneration, int numberOfGenerations) {
         this.numberOfMutations = numberOfMutations;
-
         this.bestSolutionFromEveryGeneration = bestSolutionFromEveryGeneration;
+        this.numberOfGenerations=numberOfGenerations;
 
     }
+
+public int getNumberOfGenerations(){
+        return this.numberOfGenerations;
+}
 
 
 
@@ -58,24 +38,18 @@ public class EvolutionaryAlgorithm {
 
     public  Solution DDAP( int sizeOfInitialPopulation, long seed, ArrayList<Demand> demands, ArrayList<Link>links, double percentOfBestSolutions, double pCrossover, double pMutation, double endTime, int maxNumberOfGenerations, int maxNumberOfGenerationWithoutImprovement, int maxNumberOfMutation , ArrayList<Solution> bestSolutionFromEveryGeneration){
         List<Solution> population = getInitialSolutions(sizeOfInitialPopulation,seed,demands, links);
-//ArrayList<Solution> bestSolutionFromEveryGeneration= new ArrayList<>();
+
         Solution bestSolution = new Solution();
 
-        int numberOfGeneration=0;
         int numberOfGenerationWithoutImprovement=0;
-       // int numberOfMutations=0;
-
-
         int bestCost =Integer.MAX_VALUE;
-
         int cost=0;
-//        System.out.println("start");
-        endTime = System.currentTimeMillis() + endTime * 1000;
-        while ((stopCriterion(endTime,maxNumberOfGenerations, maxNumberOfGenerationWithoutImprovement, maxNumberOfMutation,numberOfGeneration, numberOfGenerationWithoutImprovement ))) {
-            numberOfGeneration++;
-           // System.out.println(numberOfGeneration+" gneracjaaaaaaaa");
 
-            Solution bestSolutionOfGeneration = new Solution();
+        endTime = System.currentTimeMillis() + endTime * 1000;
+        while ((stopCriterion(endTime,maxNumberOfGenerations, maxNumberOfGenerationWithoutImprovement, maxNumberOfMutation,numberOfGenerations, numberOfGenerationWithoutImprovement ))) {
+            numberOfGenerations++;
+
+           Solution bestSolutionOfGeneration = new Solution();
             int bestCostOfGeneration =Integer.MAX_VALUE;
             for (Solution solution : population) {
                 cost=0;
@@ -140,32 +114,28 @@ public class EvolutionaryAlgorithm {
         List<Solution> population= getInitialSolutions(sizeOfInitialPopulation,seed, demands , links);
         Solution bestSolution = new Solution();
         int maxValue= Integer.MAX_VALUE;
-        int numberOfGeneration=0;
+        //int numberOfGeneration=0;
         int numberOfGenerationWithoutImprovement=0;
 
         endTime = System.currentTimeMillis() + endTime * 1000;
-        while (stopCriterion(endTime,maxNumberOfGenerations, maxNumberOfGenerationWithoutImprovement, maxNumberOfMutation,numberOfGeneration, numberOfGenerationWithoutImprovement )) {
-            numberOfGeneration++;
+        while (stopCriterion(endTime,maxNumberOfGenerations, maxNumberOfGenerationWithoutImprovement, maxNumberOfMutation,numberOfGenerations, numberOfGenerationWithoutImprovement )) {
+            numberOfGenerations++;
             Solution bestSolutionOfGeneration = new Solution();
             int maxValueOfGeneration= Integer.MAX_VALUE;
-
             for (Solution solution : population) {
 
                 ArrayList<Integer> linksOverload = new ArrayList<>();
 int cost=0;
                 int n=0;
                 for (int a = 0; a < solution.getVolumeAllocatedOnLinks().size(); a++) {
-                    if(cost<(solution.getVolumeAllocatedOnLinks().get(a) -( links.get(a).getNumberOfModules()*links.get(a).getLinkModule())));
-                    cost=(solution.getVolumeAllocatedOnLinks().get(a) -( links.get(a).getNumberOfModules()*links.get(a).getLinkModule()));
-                    /*
-                    if(solution.getVolumeAllocatedOnLinks().get(a) - links.get(a).getNumberOfModules()>0){
-                        n++;
-                    }
-*/
+
+                    linksOverload.add(solution.getVolumeAllocatedOnLinks().get(a) -( links.get(a).getNumberOfModules()*links.get(a).getLinkModule()));
+
                 }
+                cost= Collections.max(linksOverload);
                 solution.setCost(cost);
-                solution.setNumberOfLinksWithExceededCapacity(n);
-                if (cost < maxValue) {
+
+                if (cost < maxValueOfGeneration) {
                     maxValueOfGeneration = cost;
                     bestSolutionOfGeneration = solution;
 
@@ -407,21 +377,7 @@ int cost=0;
         return finalCombinations;
     }
 
-    /*
-    //ArrayList<Solution> allSolutions = allPossibleSolutions(demands);
-    ArrayList<Solution> initialPopulation = new ArrayList<>();
-    Random random =new Random(seed);
 
-    for(int a= 0; a< numberOfChromosomes; a++){
-        initialPopulation.add(allSolutions.get(random.nextInt(allSolutions.size())));
-
-
-    }
-
-
-
-    return initialPopulation;
-}*/
     public static ArrayList<int[]> allCombinationsForDemand(final int n, final int k) {
         ArrayList<String> res = new ArrayList<>();
         int[] input = new int[k + 1];
