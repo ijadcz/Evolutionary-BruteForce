@@ -11,7 +11,7 @@ public class Solution {
     private List<Integer> volumeAllocatedOnLinks;
    private int cost;
 
-   
+
     public void setChromosome(List<int[]> newChromosome){
         this.chromosome=newChromosome;
     }

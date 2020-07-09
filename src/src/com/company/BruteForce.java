@@ -12,7 +12,7 @@ public class BruteForce {
 
     public static Solution DDAP(ArrayList<Demand> demands, ArrayList<Link> links, ArrayList<Solution> allPossible){
         ArrayList<Solution> solutions= allPossibleSolutions(demands, links);
-        int cost=0;
+        int cost;
         Solution bestSolution= new Solution();
         int bestCost =Integer.MAX_VALUE;
 
@@ -21,7 +21,7 @@ public class BruteForce {
             cost=0;
             for(int a=0; a<solution.getVolumeAllocatedOnLinks().size();a++){
 
-                cost =cost+solution.getVolumeAllocatedOnLinks().get(a)/(links.get(a).getLinkModule())*links.get(a).getModuleCost();
+                cost = (int) (cost+ Math.ceil((float)solution.getVolumeAllocatedOnLinks().get(a)/(float)(links.get(a).getLinkModule()))*links.get(a).getModuleCost());
                // cost= cost+solution.getVolumeAllocatedOnLinks().get(a)*links.get(a).getModuleCost(); /// ??????? solution.getVolumeAllocatedOnLinks()/links.get(a).getLinkModule()*links.get(a).getModuleCost()
 
             }
@@ -51,17 +51,17 @@ public class BruteForce {
 
         for(Solution solution:solutions){
 
+            ArrayList<Integer> linksOverload = new ArrayList<>();
 
-
-            int cost=0;
+            int cost;
             int n=0;
             for (int a = 0; a < solution.getVolumeAllocatedOnLinks().size(); a++) {
-                if(cost<(solution.getVolumeAllocatedOnLinks().get(a) -( links.get(a).getNumberOfModules()*links.get(a).getLinkModule())));
-                cost=(solution.getVolumeAllocatedOnLinks().get(a) -( links.get(a).getNumberOfModules()*links.get(a).getLinkModule()));
-                /*
+                 linksOverload.add(solution.getVolumeAllocatedOnLinks().get(a) -( links.get(a).getNumberOfModules()*links.get(a).getLinkModule()));
 
 
-            }*/}
+
+            }
+            cost= Collections.max(linksOverload);
             solution.setCost(cost);
             if (cost<maxValue){
                 maxValue=cost;
@@ -90,13 +90,13 @@ public class BruteForce {
 
     public static ArrayList<Solution> allPossibleSolutions(ArrayList<Demand> demands, ArrayList<Link> links){
         ArrayList<Solution> solutions= new ArrayList<>();
-        List<List<int[]>> chromosomes=new ArrayList<>() ;
+        List<List<int[]>> chromosomes;
         chromosomes= allPossibleChromosomes(demands);
 
-        for(int a=0; a<chromosomes.size();a++){
-            Solution solution =new Solution();
-            solution.setChromosome(chromosomes.get(a));
-            solution.setVolumeAllocatedOnLinks(Solution.calculateVolumeAllocationOnLinks(chromosomes.get(a),demands, links));
+        for (List<int[]> chromosome : chromosomes) {
+            Solution solution = new Solution();
+            solution.setChromosome(chromosome);
+            solution.setVolumeAllocatedOnLinks(Solution.calculateVolumeAllocationOnLinks(chromosome, demands, links));
             solutions.add(solution);
         }
 
@@ -109,12 +109,12 @@ public class BruteForce {
 
 
 
-    public static List<List<int[]>> allPossibleChromosomes( ArrayList<Demand> demands){
+    private static List<List<int[]>> allPossibleChromosomes(ArrayList<Demand> demands){
         List<List<int[]>> list= new ArrayList<>();
-        List<List<int[]>> chromosomes= new ArrayList<>();
+        List<List<int[]>> chromosomes;
 
-        for( int a=0; a<demands.size();a++){
-            ArrayList<int[]> demandCombinations= allCombinationsForDemand(demands.get(a).getVolume(),demands.get(a).getPaths().size());
+        for (Demand demand : demands) {
+            ArrayList<int[]> demandCombinations = allCombinationsForDemand(demand.getVolume(), demand.getPaths().size());
             list.add(demandCombinations);
 
         }
@@ -127,7 +127,7 @@ public class BruteForce {
 
 
 
-    public static List<List<int[]>> calculateCartesianProduct(List<List<int[]> >inputLists) {
+    private static List<List<int[]>> calculateCartesianProduct(List<List<int[]>> inputLists) {
         List<List<int[]>> cartesianProducts = new ArrayList<>();
         if (inputLists != null && inputLists.size() > 0) {
             // separating the list at 0th index
@@ -135,14 +135,12 @@ public class BruteForce {
             // recursive call
             List<List<int[]>> remainingLists = calculateCartesianProduct(inputLists.subList(1, inputLists.size()));
             // calculating the cartesian product
-            initialList.forEach(element -> {
-                remainingLists.forEach(remainingList -> {
-                    ArrayList<int[]> cartesianProduct = new ArrayList<>();
-                    cartesianProduct.add(element);
-                    cartesianProduct.addAll(remainingList);
-                    cartesianProducts.add(cartesianProduct);
-                });
-            });
+            initialList.forEach(element -> remainingLists.forEach(remainingList -> {
+                ArrayList<int[]> cartesianProduct = new ArrayList<>();
+                cartesianProduct.add(element);
+                cartesianProduct.addAll(remainingList);
+                cartesianProducts.add(cartesianProduct);
+            }));
         } else {
             // Base Condition for Recursion (returning empty List as only element)
             cartesianProducts.add(new ArrayList<>());
@@ -151,7 +149,7 @@ public class BruteForce {
     }
 
 
-    public static ArrayList<int[]> allCombinationsForDemand(final int n, final int k) {
+    private static ArrayList<int[]> allCombinationsForDemand(final int n, final int k) {
         ArrayList<String> res = new ArrayList<>();
         int[] input = new int[k + 1];
         Boolean mtc = Boolean.FALSE;
@@ -187,14 +185,14 @@ public class BruteForce {
 
         ArrayList<String[]> ta = new ArrayList<>();
         for (int b = 0; b < allCombinations.size(); b++) {
-            String[] temp = res.get(b).split((",|]"));
+            String[] temp = res.get(b).split(("[,\\]]"));
             ta.add(temp);
         }
         ArrayList<int[]> ok = new ArrayList<>();
-        for (int c = 0; c < ta.size(); c++) {
-            int[] temp = new int[ta.get(c).length - 1];
-            for (int d = 0; d < ta.get(c).length - 1; d++) {
-                temp[d] = Integer.parseInt(ta.get(c)[d + 1]);
+        for (String[] strings : ta) {
+            int[] temp = new int[strings.length - 1];
+            for (int d = 0; d < strings.length - 1; d++) {
+                temp[d] = Integer.parseInt(strings[d + 1]);
 
             }
             ok.add(temp);

@@ -43,7 +43,7 @@ public int getNumberOfGenerations(){
 
         int numberOfGenerationWithoutImprovement=0;
         int bestCost =Integer.MAX_VALUE;
-        int cost=0;
+
 
         endTime = System.currentTimeMillis() + endTime * 1000;
         while ((stopCriterion(endTime,maxNumberOfGenerations, maxNumberOfGenerationWithoutImprovement, maxNumberOfMutation,numberOfGenerations, numberOfGenerationWithoutImprovement ))) {
@@ -52,10 +52,10 @@ public int getNumberOfGenerations(){
            Solution bestSolutionOfGeneration = new Solution();
             int bestCostOfGeneration =Integer.MAX_VALUE;
             for (Solution solution : population) {
-                cost=0;
+                int cost=0;
                 for (int a = 0; a < solution.getVolumeAllocatedOnLinks().size(); a++) {
 
-                    cost =cost+solution.getVolumeAllocatedOnLinks().get(a)/(links.get(a).getLinkModule())*links.get(a).getModuleCost() ;///solution.getVolumeAllocatedOnLinks().get(a) * links.get(a).getModuleCost();
+                    cost = (int) (cost+Math.ceil((float)solution.getVolumeAllocatedOnLinks().get(a)/(float)(links.get(a).getLinkModule()))*links.get(a).getModuleCost());///solution.getVolumeAllocatedOnLinks().get(a) * links.get(a).getModuleCost();
 
                 }
 
@@ -77,7 +77,7 @@ public int getNumberOfGenerations(){
             } else {
                 numberOfGenerationWithoutImprovement++;
             }
-            population= getBestDDAP(population, percentOfBestSolutions);
+            population= getBest(population, percentOfBestSolutions);
             population= crossover( population, seed, pCrossover, demands, links);
             population = mutation(population, pMutation, seed, demands, links);
 
@@ -91,7 +91,7 @@ public int getNumberOfGenerations(){
 
 
 
-    public static List<Solution> getBestDDAP(List<Solution> allSolutions, double percentOfBestSolutions) {
+    private static List<Solution> getBest(List<Solution> allSolutions, double percentOfBestSolutions) {
 
         int subListEnd = (int) Math.round(allSolutions.size() * (percentOfBestSolutions / 100));
         List<Solution> list0 = allSolutions.stream()
@@ -125,7 +125,7 @@ public int getNumberOfGenerations(){
             for (Solution solution : population) {
 
                 ArrayList<Integer> linksOverload = new ArrayList<>();
-int cost=0;
+int cost;
                 int n=0;
                 for (int a = 0; a < solution.getVolumeAllocatedOnLinks().size(); a++) {
 
@@ -149,7 +149,7 @@ int cost=0;
             } else {
                 numberOfGenerationWithoutImprovement++;
             }
-            population= getBestDAP(population, percentOfBestSolutions);
+            population= getBest(population, percentOfBestSolutions);
             population= crossover( population, seed, pCrossover, demands, links);
             population = mutation(population, pMutation, seed, demands, links);
 
@@ -163,7 +163,7 @@ int cost=0;
         return bestSolution;
     }
 
-    public List<Solution> mutation(List<Solution> population, double pMutation, long seed, ArrayList<Demand> demands, ArrayList<Link> links) {
+    private List<Solution> mutation(List<Solution> population, double pMutation, long seed, ArrayList<Demand> demands, ArrayList<Link> links) {
         List<Solution> mutatedPopulation = new ArrayList<>();
 
         Random rand = new Random();
@@ -202,7 +202,7 @@ int cost=0;
 
     }
 
-    public static int[] mutateGene(int[] gene, double pMutation, long seed) {
+    private static int[] mutateGene(int[] gene, double pMutation, long seed) {
         Random rand = new Random(seed);
 
         for (int a = 0; a < gene.length; a++) {
@@ -222,8 +222,8 @@ int cost=0;
     }
 
 
-    public static List<Solution> crossover(List<Solution> population, long seed, double pCrossover, ArrayList<Demand> demands, ArrayList<Link> links) {
-        List<Solution> children = new ArrayList<Solution>();
+    private static List<Solution> crossover(List<Solution> population, long seed, double pCrossover, ArrayList<Demand> demands, ArrayList<Link> links) {
+        List<Solution> children = new ArrayList<>();
         Random random = new Random(seed);
 
         for (int a = 0; a < population.size() / 2; a++) {
@@ -236,8 +236,8 @@ int cost=0;
     }
 
 
-    public static ArrayList<Solution> crossParents(Solution parent1, Solution parent2, double pCrossover, long seed, ArrayList<Demand> demands, ArrayList<Link> links) {
-        ArrayList<Solution> children = new ArrayList<Solution>();
+    private static ArrayList<Solution> crossParents(Solution parent1, Solution parent2, double pCrossover, long seed, ArrayList<Demand> demands, ArrayList<Link> links) {
+        ArrayList<Solution> children = new ArrayList<>();
         Solution child1 = new Solution();
         Solution child2 = new Solution();
         List<int[]> chromosome1 = new ArrayList<>();
@@ -289,7 +289,7 @@ int cost=0;
 
         return children;
     }
-
+/*
 
     public static List<Solution> getBestDAP(List<Solution> allSolutions, double percentOfBestSolutions) {
 
@@ -308,7 +308,7 @@ int cost=0;
 
         return list;
     }
-
+*/
     private boolean stopCriterion(double endTime, int maxNumberOfGenerations, int maxNumberOfGenerationWithoutImprovement, int maxNumberOfMutation, int currentGeneration, int currentNumberOfGenerationsWithoutImprovement) {
 
         if (System.currentTimeMillis() >= endTime) {
@@ -320,26 +320,22 @@ int cost=0;
             return false;
         }
         if (this.numberOfMutations >= maxNumberOfMutation) {
-      //      System.out.println("mutationsssssssssss");
+      //      System.out.println("mutations");
             return false;
         }
-        if (currentNumberOfGenerationsWithoutImprovement >= maxNumberOfGenerationWithoutImprovement) {
         //    System.out.println("no improvement");
-
-            return false;
-        }
-        return true;
+        return currentNumberOfGenerationsWithoutImprovement < maxNumberOfGenerationWithoutImprovement;
     }
 
-    public static ArrayList<Solution> getInitialSolutions(int sizeOfPopulation, long seed ,ArrayList<Demand> demands, ArrayList<Link>links){
+    private static ArrayList<Solution> getInitialSolutions(int sizeOfPopulation, long seed, ArrayList<Demand> demands, ArrayList<Link> links){
         ArrayList<Solution> solutions= new ArrayList<>();
-        List<List<int[]>> chromosomes=new ArrayList<>() ;
+        List<List<int[]>> chromosomes;
         chromosomes= getInitialPopulation(sizeOfPopulation, seed, demands);
 
-        for(int a=0; a<chromosomes.size();a++){
-            Solution solution =new Solution();
-            solution.setChromosome(chromosomes.get(a));
-            solution.setVolumeAllocatedOnLinks(Solution.calculateVolumeAllocationOnLinks(chromosomes.get(a),demands, links));
+        for (List<int[]> chromosome : chromosomes) {
+            Solution solution = new Solution();
+            solution.setChromosome(chromosome);
+            solution.setVolumeAllocatedOnLinks(Solution.calculateVolumeAllocationOnLinks(chromosome, demands, links));
             solutions.add(solution);
         }
 
@@ -348,13 +344,13 @@ int cost=0;
     }
 
 
-    public static List<List<int[]>> getInitialPopulation(int numberOfChromosomes, long seed, ArrayList<Demand> demands) {
+    private static List<List<int[]>> getInitialPopulation(int numberOfChromosomes, long seed, ArrayList<Demand> demands) {
         List<List<int[]>> lists = new ArrayList<>();
         Random random = new Random(seed);
 
 
-        for (int a = 0; a < demands.size(); a++) {
-            List<int[]> comb = allCombinationsForDemand(demands.get(a).getVolume(), demands.get(a).getPaths().size());
+        for (Demand demand : demands) {
+            List<int[]> comb = allCombinationsForDemand(demand.getVolume(), demand.getPaths().size());
             lists.add(comb);
 
 
@@ -372,13 +368,11 @@ int cost=0;
 
         }
 
-        List<List<int[]>> finalCombinations = new ArrayList<>(combinations);
-
-        return finalCombinations;
+        return new ArrayList<>(combinations);
     }
 
 
-    public static ArrayList<int[]> allCombinationsForDemand(final int n, final int k) {
+    private static ArrayList<int[]> allCombinationsForDemand(final int n, final int k) {
         ArrayList<String> res = new ArrayList<>();
         int[] input = new int[k + 1];
         Boolean mtc = Boolean.FALSE;
@@ -414,14 +408,14 @@ int cost=0;
 
         ArrayList<String[]> ta = new ArrayList<>();
         for (int b = 0; b < allCombinations.size(); b++) {
-            String[] temp = res.get(b).split((",|]"));
+            String[] temp = res.get(b).split(("[,\\]]"));
             ta.add(temp);
         }
         ArrayList<int[]> ok = new ArrayList<>();
-        for (int c = 0; c < ta.size(); c++) {
-            int[] temp = new int[ta.get(c).length - 1];
-            for (int d = 0; d < ta.get(c).length - 1; d++) {
-                temp[d] = Integer.parseInt(ta.get(c)[d + 1]);
+        for (String[] strings : ta) {
+            int[] temp = new int[strings.length - 1];
+            for (int d = 0; d < strings.length - 1; d++) {
+                temp[d] = Integer.parseInt(strings[d + 1]);
 
             }
             ok.add(temp);
